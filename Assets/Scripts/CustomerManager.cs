@@ -30,10 +30,6 @@ public class CustomerManager : MonoBehaviour
             maxSize: 20
         );
     }
-    void Update()
-    {
-        
-    }
     public void Spawn()
     {
         Customer guest = customerPool.Get();

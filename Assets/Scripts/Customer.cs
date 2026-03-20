@@ -9,13 +9,17 @@ enum State
 }
 public class Customer : MonoBehaviour
 {
+    [Header("General Settings")]
     [SerializeField] private Animator animator;
     [SerializeField] private Transform stand;
     [SerializeField] private Transform end;
+    [Header("Customer Settings")]
     [SerializeField] private float speed;
-    public Action<Customer> OnTaskComplete;
+    [SerializeField] private float patiences;
     private State CurrenState;
+    private Order currentOrder;
     private bool isWaiting = false; 
+    public Action<Customer> OnTaskComplete;
     void Start()
     {
         CurrenState = State.IDLE;
@@ -37,7 +41,9 @@ public class Customer : MonoBehaviour
     private IEnumerator Waiting()
     {
         isWaiting = true;
-        yield return new WaitForSeconds(5f);
+        currentOrder = OrderManager.instance.getRandomOrder();
+        OrderManager.instance.SetUpOrder(currentOrder);
+        yield return new WaitForSeconds(patiences);
         CurrenState = State.WALK;
         isWaiting = false;
     }

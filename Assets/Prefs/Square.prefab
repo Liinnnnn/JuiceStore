@@ -108,3 +108,4 @@ MonoBehaviour:
   stand: {fileID: 1576622507900944052, guid: 1dbd5f190a5993b448675e23287db919, type: 3}
   end: {fileID: 1107615822964590586, guid: dafc45cac0d4b7b45810cb871c154ce9, type: 3}
   speed: 0.5
+  patiences: 30
