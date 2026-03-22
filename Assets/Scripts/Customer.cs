@@ -18,8 +18,9 @@ public class Customer : MonoBehaviour
     [SerializeField] private float patiences;
     private State CurrenState;
     private Order currentOrder;
+    private float currentTimer;
     private bool isWaiting = false; 
-    public Action<Customer> OnTaskComplete;
+    public Action<Customer> OnReachEnd;
     void Start()
     {
         CurrenState = State.IDLE;
@@ -32,7 +33,7 @@ public class Customer : MonoBehaviour
     private void goToStand()
     {
         transform.position = Vector3.MoveTowards(transform.position,stand.position,speed * Time.deltaTime);
-        if(Vector3.Distance(transform.position,stand.position) <0.1f)
+        if(Vector3.Distance(transform.position,stand.position) <= 0.1f)
         {
             CurrenState = State.WAITING;
         }
@@ -53,7 +54,7 @@ public class Customer : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position,end.position,speed * Time.deltaTime);
         if(Vector3.Distance(transform.position,end.position) <0.1f)
         {
-            OnTaskComplete?.Invoke(this);
+            OnReachEnd?.Invoke(this);
         }
     }
     private void SwitchState()
@@ -64,15 +65,28 @@ public class Customer : MonoBehaviour
                 goToStand();
                 break;
             case State.WAITING:
+                currentTimer+= Time.deltaTime;
+                OrderManager.instance.UpdateUI(CalculatePatiences());
                 if (!isWaiting) 
                 {
                     StartCoroutine(Waiting());
                 }
                 break;
             case State.WALK:
+                OrderManager.instance.ClearOrder();
                 leftStand();
                 break;
         }
     }
-
+    public void ResetState()
+    {
+        CurrenState = State.IDLE;
+        currentTimer = 0f;
+        isWaiting = false;
+    }
+    private float CalculatePatiences()
+    {
+        float val = Mathf.Clamp01(currentTimer/patiences);
+        return val;
+    }
 }

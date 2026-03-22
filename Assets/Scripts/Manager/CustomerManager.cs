@@ -20,8 +20,7 @@ public class CustomerManager : MonoBehaviour
         customerPool = new ObjectPool<Customer>(
             createFunc: () => {
                 Customer c = Instantiate(Customer,parent);
-                // Đăng ký: Khi Customer xong việc, gọi hàm Release của Pool
-                c.OnTaskComplete = (customer) => customerPool.Release(customer);
+                c.OnReachEnd = (customer) => {OnCustomerLeft(customer);};
                 return c;
             },
             actionOnGet: (c) => c.gameObject.SetActive(true),
@@ -30,9 +29,19 @@ public class CustomerManager : MonoBehaviour
             maxSize: 20
         );
     }
+    private void OnCustomerLeft(Customer customer)
+    {
+        customerPool.Release(customer);
+        customer.ResetState();
+        Spawn();
+    }
     public void Spawn()
     {
         Customer guest = customerPool.Get();
         guest.transform.position = SpawnZone.position; 
+    }
+    public void StopSpawning()
+    {
+        customerPool.Clear();
     }
 }
