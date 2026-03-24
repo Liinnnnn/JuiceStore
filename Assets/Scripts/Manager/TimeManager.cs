@@ -35,7 +35,7 @@ public class TimeManager : MonoBehaviour
             sec = 0;
             currentTime +=1;
             remainingTime -= 1;
-            time.text = currentTime.ToString();
+            time.text = currentTime.ToString() + ":00";
             checkStopageGame();
         }
     }

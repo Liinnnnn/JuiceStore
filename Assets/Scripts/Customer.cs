@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
-enum State
+public enum CustomerState
 {
     IDLE,
     WAITING,
@@ -13,29 +13,32 @@ public class Customer : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private Transform stand;
     [SerializeField] private Transform end;
+    [SerializeField] private Collider2D colder;
     [Header("Customer Settings")]
     [SerializeField] private float speed;
     [SerializeField] private float patiences;
-    private State CurrenState;
     private Order currentOrder;
+    private CustomerState CurrenState;
     private float currentTimer;
     private bool isWaiting = false; 
     public Action<Customer> OnReachEnd;
     void Start()
     {
-        CurrenState = State.IDLE;
+        CurrenState = CustomerState.IDLE;
     }
 
     void Update()
     {
         SwitchState();
     }
+
     private void goToStand()
     {
         transform.position = Vector3.MoveTowards(transform.position,stand.position,speed * Time.deltaTime);
         if(Vector3.Distance(transform.position,stand.position) <= 0.1f)
         {
-            CurrenState = State.WAITING;
+            CurrenState = CustomerState.WAITING;
+            ZoneManager.instance.AppendTo(this);
         }
     }
     
@@ -45,13 +48,15 @@ public class Customer : MonoBehaviour
         currentOrder = OrderManager.instance.getRandomOrder();
         OrderManager.instance.SetUpOrder(currentOrder);
         yield return new WaitForSeconds(patiences);
-        CurrenState = State.WALK;
+        CurrenState = CustomerState.WALK;
+        ZoneManager.instance.ResetZone();
         isWaiting = false;
     }
 
     private void leftStand()
     {
         transform.position = Vector3.MoveTowards(transform.position,end.position,speed * Time.deltaTime);
+        StopAllCoroutines();
         if(Vector3.Distance(transform.position,end.position) <0.1f)
         {
             OnReachEnd?.Invoke(this);
@@ -61,10 +66,10 @@ public class Customer : MonoBehaviour
     {
         switch (CurrenState)
         {
-            case State.IDLE:
+            case CustomerState.IDLE:
                 goToStand();
                 break;
-            case State.WAITING:
+            case CustomerState.WAITING:
                 currentTimer+= Time.deltaTime;
                 OrderManager.instance.UpdateUI(CalculatePatiences());
                 if (!isWaiting) 
@@ -72,7 +77,7 @@ public class Customer : MonoBehaviour
                     StartCoroutine(Waiting());
                 }
                 break;
-            case State.WALK:
+            case CustomerState.WALK:
                 OrderManager.instance.ClearOrder();
                 leftStand();
                 break;
@@ -80,9 +85,21 @@ public class Customer : MonoBehaviour
     }
     public void ResetState()
     {
-        CurrenState = State.IDLE;
+        CurrenState = CustomerState.IDLE;
         currentTimer = 0f;
         isWaiting = false;
+    }
+    public void SetCustomerState(CustomerState state)
+    {
+        CurrenState = state;
+    }
+    public Order GetOrder()
+    {
+        return currentOrder;
+    }
+    public Vector3 getCenter()
+    {
+        return colder.bounds.center;
     }
     private float CalculatePatiences()
     {
