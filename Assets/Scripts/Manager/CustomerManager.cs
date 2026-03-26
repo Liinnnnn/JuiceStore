@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Pool;
 
-public class CustomerManager : MonoBehaviour
+public class CustomerManager : MonoBehaviour,IGameStateManager
 {
 
     [SerializeField] private Customer Customer;
@@ -12,7 +12,6 @@ public class CustomerManager : MonoBehaviour
     private ObjectPool<Customer> customerPool;
     void Start()
     {
-        Spawn();
     }
     void Awake()
     {
@@ -43,5 +42,22 @@ public class CustomerManager : MonoBehaviour
     public void StopSpawning()
     {
         customerPool.Clear();
+    }
+
+    public void GameSateChangeCallback(GameState state)
+    {
+        switch (state)
+        {
+            case GameState.ORDER:
+            case GameState.MENU:
+                break; 
+            case GameState.END:
+                StopSpawning();
+                break;
+
+            case GameState.GAME:
+                Spawn();
+                break;
+        }
     }
 }

@@ -11,6 +11,7 @@ public class TimeManager : MonoBehaviour
     [SerializeField] private float currentTime;
     [SerializeField] private float endTime;
     private float remainingTime;
+    private bool isEnd = false;
     private float sec;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -25,6 +26,7 @@ public class TimeManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(isEnd == true) return;
         sec += Time.deltaTime;
         currentTimeUpdater();
     }
@@ -41,11 +43,11 @@ public class TimeManager : MonoBehaviour
     }
     private void checkStopageGame()
     {
-        if(currentTime >= endTime)
+        if(currentTime >= endTime && remainingTime ==0 )
         {
             time.color = Color.red;
+            isEnd = true;
             GameManager.instance.EndGame();
-            CustomerManager.instance.StopSpawning();
         }
     }
 }
