@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 public enum GameState
 {
@@ -12,20 +13,16 @@ public enum GameState
 public class GameManager : MonoBehaviour{
     public static GameManager instance;
     private GameState currentState;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public int combo = -1;
+    [SerializeField] private TextMeshProUGUI ComboText;
     void Start()
     {
         SetGameSate(GameState.MENU);
+        ComboText.text = "";
     }
     void Awake()
     {
         instance = this;
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
     public void EndGame()
     {
@@ -43,6 +40,14 @@ public class GameManager : MonoBehaviour{
         {
             item.GameSateChangeCallback(state);
         }
+    }
+    public void UpdateUI()
+    {
+        if (combo <= 0)
+        {
+            return;   
+        }
+        ComboText.text = "x" + (1 + (float) combo/5).ToString();
     }
 }
 public interface IGameStateManager

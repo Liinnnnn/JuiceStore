@@ -15,6 +15,13 @@ public class ProductDragger : MonoBehaviour
         rect = GetComponent<RectTransform>();
         canvas = FindAnyObjectByType<Canvas>();
     }
+    public void Configure(Order order,Transform pos)
+    {
+        image.sprite = order.image;
+        money = order.EstimatePrice;
+        current = order;
+        transform.position = pos.position;
+    }
     void Update()
     {
         if(customer == null) 
@@ -30,21 +37,18 @@ public class ProductDragger : MonoBehaviour
             5f * Time.deltaTime);
             ProductManager.instance.ReturnToPool(this);
             Debug.Log("Wrong order");
+            GameManager.instance.combo = 0;
         }else
         {
             customer.SetCustomerState(CustomerState.WALK);
             rect.anchoredPosition = Vector2.Lerp(rect.anchoredPosition,
             new Vector2((float) Screen.width/2,(float) Screen.height/2),
             5f * Time.deltaTime);
+            CurrencyManager.instance.AddCurrencyFromSuccess(money);
+            GameManager.instance.combo += 1;
             ProductManager.instance.ReturnToPool(this);
             Debug.Log("Correct order");
         }
     }
-    public void Configure(Order order,Transform pos)
-    {
-        image.sprite = order.image;
-        money = order.EstimatePrice;
-        current = order;
-        transform.position = pos.position;
-    }
+  
 }

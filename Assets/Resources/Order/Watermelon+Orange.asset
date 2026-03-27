@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Order
   OrderName: Watermelon+Orange
   image: {fileID: 5583141051304231123, guid: 10f1ae0287949aa44a019cbd5339aae9, type: 3}
-  EstimatePrice: 200
+  EstimatePrice: 300

@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Order
   OrderName: Coconut
   image: {fileID: 8201431250575429601, guid: 116cba677dc534f43abe24c382e1b033, type: 3}
-  EstimatePrice: 238
+  EstimatePrice: 240
